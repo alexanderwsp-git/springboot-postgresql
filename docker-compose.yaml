@@ -1,0 +1,53 @@
+version: '3.8'
+networks:
+  backend:
+    name: app
+    driver: bridge
+volumes:
+  postgres_data:
+    driver: local
+services:
+  app:
+    image: springbootpostgresdocker:0.0.1-SNAPSHOT
+    container_name: web-app
+    ports:
+      - "1080:1080"
+    environment:
+      POSTGRES_SERVICES: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: docker
+      PGDATA: /var/lib/postgresql/data/pgdata
+      LOG_LEVEL: debug
+      CONTEXT_PATH: /v1/api
+      API_PORT: 1080
+      DDL_AUTO: create
+      LOG_FILE: /var/tmp/sbpgdocker.log
+    networks:
+      - backend
+    depends_on:
+      - db
+    healthcheck:
+      test: curl -f http://localhost:1080/demo/profile || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 2
+  db:
+    image: postgres:12
+    container_name: postgres-db
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: docker
+      PGDATA: /var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 1m
+      timeout: 10s
+      retries: 2

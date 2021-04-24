@@ -1,0 +1,34 @@
+# Spring Boot configuration
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-bean-definition-overriding: true
+  # Database
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${POSTGRES_SERVICES}:${POSTGRES_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  # JPA properties
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO}
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    generate-ddl: true
+# Logger configuration
+logging:
+  file: ${LOG_FILE}
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+  level:
+    org.springframework: ${LOG_LEVEL}
+    org.hibernate: ${LOG_LEVEL}
+# Server configuration
+server:
+  port: ${API_PORT}
+  servlet:
+    context-path: ${CONTEXT_PATH}
